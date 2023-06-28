@@ -1,0 +1,118 @@
+--actor
+create table actor
+(
+act_id varchar(5),
+act_name varchar(15),
+act_gender varchar(6),
+primary key(act_id)
+);
+
+--director
+create table director
+(
+dir_id varchar(5),
+dir_name varchar(15),
+dir_phone bigint,
+primary key(dir_id),
+);
+
+--movies
+create table movies
+(
+mov_id varchar(5),
+mov_title varchar(15),
+mov_year int,
+mov_lang varchar(10),
+dir_id varchar(5),
+primary key(mov_id),
+foreign key(dir_id) references director(dir_id) on delete cascade
+);
+
+--movie_cast
+create table movie_cost
+(
+act_id varchar(5),
+mov_id varchar(5),
+role varchar(15),
+primary key(act_id,mov_id),
+foreign key(act_id) references actor(act_id) on delete cascade,
+foreign key(mov_id) references movies(mov_id) on delete cascade
+);
+
+--rating
+create table rating
+(
+rat_id varchar(5),
+mov_id varchar(5),
+rev_stars int,
+primary key(rat_id),
+foreign key(mov_id) references movies(mov_id) on delete cascade
+);
+
+--actors details
+INSERT INTO actor VALUES(301,'ANUSHKA','F');
+INSERT INTO actor VALUES(302,'PRABHAS','M');
+INSERT INTO actor VALUES(303,'PUNITH','M');
+INSERT INTO actor VALUES(304,'SUDEEP','M');
+select * from actor;
+
+--directors details
+INSERT INTO director VALUES(60,'RAJAMOULI',9191919191);
+INSERT INTO director VALUES(61,'HITCHCOCK',818181818);
+INSERT INTO director VALUES(62,'FARAN',7171717171);
+INSERT INTO director VALUES(63,'STEVEN',6161616161);
+select * from director;
+
+--movies details
+INSERT INTO movies VALUES(1001,'BAHUBALI-2',2017,'TELUGU',60);
+INSERT INTO movies VALUES(1002,'BAHUBALI-1',2015,'TELUGU',60);
+INSERT INTO movies VALUES(1003,'AKASH',2008,'KANADA',61);
+INSERT INTO movies VALUES(1004,'WAR HORSE',2011,'ENGLISH',63);
+INSERT INTO movies VALUES(1005,'TITANIC',1999,'ENGLISH',63);
+
+SELECT * FROM movies;
+
+--moviecast
+INSERT INTO movie_cost VALUES(301,1002,'HEROINE');
+INSERT INTO movie_cost VALUES(301,1001,'HEROINE');
+INSERT INTO movie_cost VALUES(303,1003,'HERO');
+INSERT INTO movie_cost VALUES(303,1002,'GUEST');
+INSERT INTO movie_cost VALUES(304,1004,'HERO');
+INSERT INTO movie_cost VALUES(301,1005,'GUEST');
+
+SELECT * FROM movie_cost;
+
+--ratings details
+INSERT INTO rating VALUES(51,1001,4);
+INSERT INTO rating VALUES(52,1002,4);
+INSERT INTO rating VALUES(53,1003,5);
+INSERT INTO rating VALUES(54,1004,4);
+
+SELECT * FROM rating;
+
+--QUESTIONS AND THEIR ANSWERS
+
+--1.List the titles of all movies directed by 'Hitchock'
+select mov_title from movies m,director d where m.dir_id=d.dir_id and d.dir_name='HITCHCOCK';
+
+
+--2.Find the movie names where one or more actors acted in two or more movies
+select distinct mov_title from movies m,movie_cost mc where m.mov_id=mc.mov_id and (select count(mov_id) from movie_cost where act_id=mc.act_id)>=2;
+
+
+--3.List all actors who acted in a movie before 2000 and also in a movie after 2015(use join operation)
+select act_name from actor a join movie_cost mc on a.act_id=mc.act_id join movies m on mc.mov_id=m.mov_id where m.mov_year<2000 intersect select act_name from actor a join movie_cost mc on a.act_id=mc.act_id join movies m on mc.mov_id=m.mov_id where m.mov_year>2015;
+
+ 
+--4.Find the title of movies and number of stars for each movie that has at least one rating and find the highest number of starts that movie received.Sort the result by movie title
+select mov_title,max(rev_stars) from movies m,rating r where m.mov_id=r.mov_id group by m.mov_title,m.mov_id order by m.mov_title;
+
+
+--5.Update ratings of all movies directed by 'Steven' to 5
+update rating set rev_stars=5 where mov_id in(select m.mov_id from movies m,director d where m.dir_id=d.dir_id and d.dir_name='Steven');
+
+--6.Find the number of movies released in each year in each language
+select mov_year,mov_lang,count(mov_id) as mov_count from movies group by mov_year,mov_lang
+
+
+--7.Find the total number of movies directed by each director

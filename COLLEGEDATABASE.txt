@@ -1,0 +1,97 @@
+create table student
+(
+usn varchar(10),
+sname varchar(15),
+address varchar(15),
+phone bigint,
+gender varchar(6),
+primary key(usn)
+);
+select*from student
+
+create table semsec
+(
+ssid varchar(5),
+sem int,
+sec varchar(1),
+primary key(ssid)
+);
+select*from semsec
+
+create table class
+(
+usn varchar(10 ),
+ssid varchar(5),
+primary key(usn),
+foreign key(usn) references student(usn) on delete cascade,
+foreign key(ssid) references semsec(ssid) on delete cascade
+);
+select*from class
+
+create table subject
+(
+subcode varchar(7),
+title varchar(15),
+sem int,
+credits int,
+primary key(subcode)
+);
+select*from  subject
+
+create table iamarks
+(
+usn varchar(10),
+subcode varchar(7),
+ssid varchar(5),
+test1 int,
+test2 int,
+test3 int,
+final_ia int,
+primary key(usn,subcode,ssid),
+foreign key(usn) references student(usn) on delete cascade,
+foreign key(subcode) references subject(subcode),
+foreign key(ssid) references semsec(ssid)
+);
+select*from iamarks
+
+insert into student values('4vp14cs001','Namitha','Udupi',7860054110,'female');
+insert into student values('4vp14cs021','Mithun','Virajpete',8762514991,'male');
+insert into student values('4vp14cs053','Kshama','Puttur',9000876123,'female');
+insert into student values('4vp14is010','Raghavendra','Karwar',7860054112,'fmale');
+insert into student values('4vp14is025','Sooraj','Bangalore',8860054111,'male');
+insert into student values('4vp13cs011','Karthik','Puttur',9860054115,'male');
+select * from student
+
+insert into semsec values('a235',4,'a');
+insert into semsec values('a234',4,'b');
+insert into semsec values('a218',6,'a');
+select * from semsec
+
+insert into class values('4vp14cs001','a235');
+insert into class values('4vp14cs021','a235');
+insert into class values('4vp14cs053','a234');
+insert into class values('4vp14cs010','a234');
+insert into class values('4vp14cs001','a234');
+insert into class values('4vp13cs011','a218');
+select * from class
+ 
+ insert into subject values('15cs41','algorithms',4,4);
+ insert into subject values('15cs462','graph theory',4,3);
+ insert into subject values('15cs44','processors',4,4);
+ insert into subject values('15cs45','oop with c++',4,4);
+ insert into subject values('15cs64','networks',6,4);
+ select * from subject
+
+insert into iamarks values('4vp14cs001','15cs41','a235',19,18,20,57);
+insert into iamarks values('4vp14cs001','15cs44','a235',15,18,19,52);
+insert into iamarks values('4vp14cs021','15cs41','a235',15,17,14,46);
+insert into iamarks values('4vp14cs021','15cs44','a235',17,16,12,45);
+insert into iamarks values('4vp14cs053','15cs462','a234',13,17,15,45);
+insert into iamarks values('4vp14cs053','15cs45','a234',13,17,19,49);
+insert into iamarks values('4vp14is010','15cs462','a234',12,19,13,44);
+insert into iamarks values('4vp14is010','15cs45','a234',19,17,16,52);
+insert into iamarks values('4vp14is025','15cs462','a234',19,17,18,54);
+insert into iamarks values('4vp14is025','15cs45','a234',17,15,16,48);
+insert into iamarks values('4vp13cs011','15cs64','a218',17,18,19,54);
+insert into iamarks values('4vp13cs011','15cs45','a218',10,11,9,30);
+select * from iamarks

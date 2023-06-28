@@ -1,0 +1,145 @@
+create table publisher
+(
+name varchar(10),
+address varchar(10),
+phone int,
+primary key(name)
+);
+
+alter table publisher alter column phone bigint;
+
+create table library_branch
+(
+branch_id varchar(5),
+branch_name varchar(255),
+address varchar(255),
+primary key(branch_id)
+);
+create table book
+(
+book_id varchar(5),
+title varchar(255),
+pub_name varchar(10),
+pub_year int,
+primary key(book_id),
+foreign key(pub_name)references publisher(name) on delete cascade
+);
+
+create table book_authors
+(
+book_id varchar(5),
+author_name varchar(10),
+primary key(book_id),
+foreign key(book_id) references book(book_id) on delete cascade,
+);
+
+create table book_copies
+(
+book_id varchar(5),
+branch_id varchar(5),
+no_of_copies int,
+primary key(book_id, branch_id),
+foreign key(book_id) references book(book_id) on delete cascade,
+foreign key(branch_id) references library_branch(branch_id) on delete cascade
+);
+
+create table book_lending
+(
+book_id varchar(5),
+branch_id varchar(5),
+card_no varchar(5),
+date_out date,
+date_due date,
+primary key(book_id, branch_id, card_no),
+foreign key(book_id) references book(book_id) on delete cascade,
+foreign key(branch_id) references library_branch(branch_id) on delete cascade
+);
+
+insert into publisher values('McGraw', 'Noida', 9084567001);
+insert into publisher values('Phi', 'Pune', 9945467800);
+insert into publisher values('Pearson', 'Nagpur', 7875622333);
+insert into publisher values('Ramesh', 'Bangalore', 9900567432);
+
+insert into book values('111', 'Management', 'McGraw', 2010);
+insert into book values('112', 'Computer Networks', 'Pearson', 2006);
+insert into book values('113', 'Database Concepts', 'Pearson', 2014);
+insert into book values('115', 'Entrepreneurship', 'Pearson', 2010);
+insert into book values('114', 'Formal Languages', 'McGraw', 2006);
+insert into book values('116', 'Embedded system', 'McGraw', 2014);
+insert into book values('117', 'Programming in Java', 'Phi', 2010);
+insert into book values('118', 'Operating systems', 'Phi', 2007);
+insert into book values('119', 'Communications', 'McGraw', 2011);
+insert into book values('120', 'Deep Learning', 'Phi', 2006);
+insert into book values('121', 'Advanced Machine Learning', 'Phi', 2011);
+insert into book values('122', 'Introduction to Machine Learning', 'Phi', 2010);
+insert into book values('123', 'Programming in C++', 'Pearson', 2016);
+
+insert into book_authors values('111', 'Tripathy, Reddy');
+insert into book_authors values('112', 'Larry Peterson');
+insert into book_authors values('113', 'Ramez, Navathe');
+insert into book_authors values('114', 'John E Hopcroft');
+insert into book_authors values('115', 'Vasant Desai');
+insert into book_authors values('116', 'Rajkamal');
+insert into book_authors values('117', 'Herbert Schildt');
+insert into book_authors values('120', 'John E Hopcroft');
+insert into book_authors values('122', 'Vasant Desai');
+insert into book_authors values('123', 'Vasant Desai');
+insert into book_authors values('119', 'Vasant Desai');
+
+insert into book_copies values('111', '11', 5);
+insert into book_copies values('111', '13', 10);
+insert into book_copies values('112', '12', 5);
+insert into book_copies values('113', '11', 12);
+insert into book_copies values('113', '12', 20);
+insert into book_copies values('114', '13', 15);
+insert into book_copies values('115', '11', 9);
+insert into book_copies values('115', '13', 25);
+insert into book_copies values('116', '13', 5);
+
+insert into book_lending values('111', '11', '1111', '10-JUL-17', '20-JUL-17');
+insert into book_lending values('111', '13', '1112', '13-JUL-17', '23-JUL-17');
+insert into book_lending values('114', '13', '1113', '05-JUL-17', '15-JUL-17');
+insert into book_lending values('115', '13', '1113', '10-JUN-17', '20-JUN-17');
+insert into book_lending values('116', '13', '1113', '15-JUL-17', '25-JUL-17');
+insert into book_lending values('111', '13', '1113', '23-MAR-17', '02-APR-17');
+insert into book_lending values('111', '13', '1114', '20-APR-17', '30-APR-17');
+insert into book_lending values('113', '11', '1111', '02-APR-17', '12-APR-17');
+insert into book_lending values('113', '12', '1111', '05-MAY-17', '15-MAY-17');
+insert into book_lending values('115', '11', '1111', '02-FEB-17', '12-FEB-17');
+
+insert into library_branch values('11', 'AI and MAchine Learning', 'NC building 5th Floor');
+insert into library_branch values('12', 'Computer Science', 'NC building 5th Floor');
+insert into library_branch values('13', 'Information Science', 'NC building 5th Floor');
+
+select * from book;
+select * from book_authors;
+select * from book_copies;
+select * from book_lending;
+select * from book_lending;
+select * from publisher;
+
+alter table book_authors alter column author_name varchar(255);
+
+select b.book_id, b.title, b.pub_name, ba.author_name, bc.branch_id, bc.no_of_copies from book b, book_authors ba, book_copies bc where b.book_id = bc.book_id and b.book_id = ba.book_id;
+select distinct card_no from book_lending b where (date_out between '01-JAN-2017' and '30-JUL-2017')group by card_no having count(*)>3;
+
+select p.name from publisher p, book b where p.name = b.pub_name group by p.name having count(*)>3;
+select p.name from publisher p where not exists(select * from book where pub_name = p.name);
+select distinct author_name from book_authors group by author_name having count(author_name)>3;
+--select b.book_id from book b, book_authors ba where b.book_id=ba.book_id group by b.book_id having COUNT(ba.author_name)>3;
+ 
+select * from book where book_id='112';
+delete from book where book_id = '112';
+insert into book values('112', 'Computer Networks', 'Pearson', 2006);
+select * from book_copies;
+
+--4TH QUESTION
+create view available as
+(
+select book_id, sum(no_of_copies)-(select count(card_no) from book_lending where  b.book_id = book_id) as avail_copies from book_copies b group by book_id
+);
+
+select * from available;
+--8TH QUESTION 
+
+select branch_id from library_branch b where branch_id not in (select branch_id from book_copies where book_id='112');
